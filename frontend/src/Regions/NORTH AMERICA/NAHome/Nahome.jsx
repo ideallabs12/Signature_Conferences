@@ -13,21 +13,6 @@ import nahomeimg2 from "../../USA/Images/galleryusa1.jpeg";
 import nahomeimg3 from "../../USA/Images/galleryusa5.jpeg";
 import nahomeimg4 from "../../USA/Images/galleryusa.jpeg";
 
-
-import speaker1 from "../../USA/Landingpage/images/galleryimgus.jpeg";
-import speaker2 from "../../USA/Landingpage/images/galleryimgus1.jpeg";
-import speaker3 from "../../USA/Landingpage/images/galleryimgus2.jpeg";
-import speaker4 from "../../USA/Landingpage/images/galleryimgus3.jpeg";
-import speaker5 from "../../USA/Landingpage/images/galleryimgus4.jpeg";
-import speaker6 from "../../USA/Landingpage/images/galleryimgus5.jpeg";
-import speaker7 from "../../USA/Landingpage/images/usagallery5.jpeg";
-import speaker8 from "../../USA/Landingpage/images/usagallery7.jpeg";
-import speaker9 from "../../USA/Landingpage/images/usagallery9.jpeg";
-import speaker10 from "../../USA/Landingpage/images/usagallery13.jpeg";
-import speaker11 from "../../USA/Landingpage/images/Marcia Hamilton.jpeg";
-import speaker12 from "../../USA/Landingpage/images/Cara Tyrrell.jpeg";
-
-
 const NA_NAV_LINKS = [
   { label: "Home", path: "/northamerica" },
   { label: "About", path: "/na-about" },
@@ -442,31 +427,11 @@ function NaWhyJoinUs() {
   );
 }
 
-const speakers = [
-  { id: 1, src: speaker1, alt: "Speaker 1" },
-  { id: 2, src: speaker2, alt: "Speaker 2" },
-  { id: 3, src: speaker3, alt: "Speaker 3" },
-  { id: 4, src: speaker4, alt: "Speaker 4" },
-  { id: 5, src: speaker5, alt: "Speaker 5" },
-  { id: 6, src: speaker6, alt: "Speaker 6" },
-  { id: 7, src: speaker7, alt: "Speaker 7" },
-  { id: 8, src: speaker8, alt: "Speaker 8" },
-  { id: 9, src: speaker9, alt: "Speaker 9" },
-  { id: 10, src: speaker10, alt: "Speaker 10" },
-  { id: 11, src: speaker11, alt: "Speaker 11" },
-  { id: 12, src: speaker12, alt: "Speaker 12" },
-
-];
-
-
-const row1 = [...speakers, ...speakers];
-const row2 = [...[...speakers].reverse(), ...[...speakers].reverse()];
-
-function NASpeakerCard({ sp,  isActive, onEnter, onLeave }) {
+function NASpeakerCard({ sp, isActive, onEnter, onLeave }) {
   return (
     <div className={`na-speaker-card${isActive ? " na-speaker-card--active" : ""}`} onMouseEnter={onEnter} onMouseLeave={onLeave}>
       <div className="na-speaker-card__img-wrap">
-        <img src={sp.src} alt={sp.alt} className="na-speaker-card__img" draggable="false" />
+        <img src={sp.image_url} alt={sp.speaker_name || "Speaker"} className="na-speaker-card__img" draggable="false" />
         <div className="na-speaker-card__overlay" aria-hidden="true" />
       </div>
       <div className="na-speaker-card__bar" aria-hidden="true" />
@@ -475,10 +440,36 @@ function NASpeakerCard({ sp,  isActive, onEnter, onLeave }) {
 }
 
 function NASpeakers() {
+  const [speakers, setSpeakers] = useState([]);
   const [pausedRow, setPausedRow] = useState(null);
   const [activeId, setActiveId] = useState(null);
   const handleEnter = (row, id) => { setPausedRow(row); setActiveId(id); };
   const handleLeave = () => { setPausedRow(null); setActiveId(null); };
+
+  useEffect(() => {
+    async function fetchSpeakers() {
+      const { data, error } = await supabase
+        .from("speakers")
+        .select("id, speaker_name, role, image_url, region, display_order")
+        .eq("is_published", true)
+        .order("display_order", { ascending: true });
+
+      if (error) {
+        console.error("Failed to fetch NA speakers:", error.message);
+        return;
+      }
+      const filtered = (data || []).filter((row) => {
+        const r = (row.region || "").trim().toLowerCase();
+        return !r || r === "all" || r === "north-america" || r === "north america";
+      });
+      setSpeakers(filtered.slice(0, 12));
+    }
+    fetchSpeakers();
+  }, []);
+
+  const row1 = [...speakers, ...speakers];
+  const rev = [...speakers].reverse();
+  const row2 = [...rev, ...rev];
 
   const renderTrack = (rowData, rowNum, dir) => (
     <div className="na-speakers__track-wrap">

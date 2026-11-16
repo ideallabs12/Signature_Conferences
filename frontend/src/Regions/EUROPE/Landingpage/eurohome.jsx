@@ -9,21 +9,6 @@ import BgImage from "./imgs/texture_bg_2.jpg";
 import sgcLogo from "../../globaldata/sgc_logo.jpeg";
 import Footer from "../../../Components/Footer/footer";
 
-import img1 from "../../USA/Landingpage/images/galleryimgus.jpeg";
-import img2 from "../../USA/Landingpage/images/galleryimgus1.jpeg";
-import img3 from "../../USA/Landingpage/images/galleryimgus2.jpeg";
-import img4 from "../../USA/Landingpage/images/galleryimgus3.jpeg";
-import img5 from "../../USA/Landingpage/images/galleryimgus4.jpeg";
-import img6 from "../../USA/Landingpage/images/galleryimgus5.jpeg";
-import img7 from "../../USA/Landingpage/images/usagallery5.jpeg";
-import img8 from "../../USA/Landingpage/images/usagallery7.jpeg";
-import img9 from "../../USA/Landingpage/images/usagallery9.jpeg";
-import img10 from "../../USA/Landingpage/images/usagallery13.jpeg";
-import img11 from "../../USA/Landingpage/images/Marcia Hamilton.jpeg";
-import img12 from "../../USA/Landingpage/images/Cara Tyrrell.jpeg";
-
-
-
 import eurogalleryimg from "../../USA/Images/usagallery7.jpeg";
 import eurogalleryimg1 from "../../USA/Images/usagallery1.jpeg";
 import eurogalleryimg2 from "../../USA/Images/usagallery2.jpeg";
@@ -106,21 +91,6 @@ const NAV_LINKS = [
 
 
 const SWAY_CLASSES = ["europe-sway-a", "europe-sway-b", "europe-sway-c", "europe-sway-d"];
-
-const SPEAKERS = [
-  { id: 1, image: img1 },
-  { id: 2, image: img2 },
-  { id: 3, image: img3 },
-  { id: 4, image: img4 },
-  { id: 5, image: img5 },
-  { id: 6, image: img6 },
-  { id: 7, image: img7 },
-  { id: 8, image: img8 },
-  { id: 9, image: img9 },
-  { id: 10, image: img10 },
-  { id: 11, image: img11 },
-  { id: 12, image: img12 },
-];
 
 const photos = [
   { id: 1, src: eurogalleryimg, alt: "Conference keynote hall", span: "tall" },
@@ -444,37 +414,63 @@ const CARD_W = 190;
 const CENTER_W = 295;
 const GAP = 16;
 const DUR = 650;
-const COUNT = SPEAKERS.length;
 
 function SpeakersCarousel() {
+  const [speakersList, setSpeakersList] = useState([]);
   const [active, setActive] = useState(0);
   const [busy, setBusy] = useState(false);
   const timerRef = useRef(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    async function fetchSpeakers() {
+      const { data, error } = await supabase
+        .from("speakers")
+        .select("id, speaker_name, role, image_url, region, display_order")
+        .eq("is_published", true)
+        .order("display_order", { ascending: true });
+
+      if (error) {
+        console.error("Failed to fetch Europe speakers:", error.message);
+        return;
+      }
+      const filtered = (data || []).filter((row) => {
+        const r = (row.region || "").trim().toLowerCase();
+        return !r || r === "all" || r === "europe";
+      });
+      setSpeakersList(filtered.slice(0, 12));
+    }
+    fetchSpeakers();
+  }, []);
+
+  const COUNT = speakersList.length;
+
   const go = useCallback((idx) => {
-    if (busy) return;
+    if (busy || COUNT === 0) return;
     const next = ((idx % COUNT) + COUNT) % COUNT;
     if (next === active) return;
     setBusy(true);
     setActive(next);
     setTimeout(() => setBusy(false), DUR);
-  }, [busy, active]);
+  }, [busy, active, COUNT]);
 
   const advance = useCallback(() => {
+    if (COUNT === 0) return;
     setActive((prev) => (prev + 1) % COUNT);
-  }, []);
+  }, [COUNT]);
 
   useEffect(() => {
+    if (COUNT === 0) return;
     timerRef.current = setInterval(advance, 3000);
     return () => clearInterval(timerRef.current);
-  }, [advance]);
+  }, [advance, COUNT]);
 
   const handleNav = useCallback((idx) => {
+    if (COUNT === 0) return;
     clearInterval(timerRef.current);
     go(idx);
     timerRef.current = setInterval(advance, 3000);
-  }, [go, advance]);
+  }, [go, advance, COUNT]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -510,7 +506,7 @@ function SpeakersCarousel() {
       </div>
       <div className="europe-sc-stage-wrap">
         <div className="europe-sc-stage">
-          {SPEAKERS.map((sp, idx) => {
+          {speakersList.map((sp, idx) => {
             let offset = (idx - active) % COUNT;
             if (offset > Math.floor(COUNT / 2)) offset -= COUNT;
             if (offset < -Math.floor(COUNT / 2)) offset += COUNT;
@@ -518,7 +514,7 @@ function SpeakersCarousel() {
             return (
               <div key={sp.id} className={`europe-sc-pill${isCenter ? " europe-sc-pill--center" : ""}`} style={getStyle(offset)} onClick={() => !isCenter && handleNav(idx)}>
                 <div className="europe-sc-pill-photo">
-                  <img src={sp.image} alt={sp.name} draggable={false} />
+                  <img src={sp.image_url} alt={sp.speaker_name || "Speaker"} draggable={false} />
                   <div className="europe-sc-pill-photo-fade" />
                 </div>
               </div>
@@ -527,7 +523,7 @@ function SpeakersCarousel() {
         </div>
       </div>
       <div className="europe-sc-dots">
-        {SPEAKERS.map((_, i) => (
+        {speakersList.map((_, i) => (
           <button key={i} className={`europe-sc-dot${i === active ? " europe-sc-dot--on" : ""}`} onClick={() => handleNav(i)} aria-label={`Go to speaker ${i + 1}`} />
         ))}
       </div>

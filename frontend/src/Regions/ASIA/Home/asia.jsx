@@ -17,13 +17,6 @@ import asiagalleyhome5 from "../../USA/Images/galleryusa1.jpeg";
 import asiagalleyhome6 from "../../USA/Images/galleryusa3.jpeg";
 import asiagalleyhome7 from "../../USA/Images/galleryusa.jpeg";
 
-
-import speakerimg from "../../USA/Landingpage/images/galleryimgus3.jpeg";
-import speakerimg1 from "../../USA/Landingpage/images/galleryimgus2.jpeg";
-import speakerimg2 from "../../USA/Landingpage/images/galleryimgus5.jpeg";
-import speakerimg3 from "../../USA/Landingpage/images/galleryimgus.jpeg";
-
-
 /* ─── DATA ──────────────────────────────────── */
 const stats = [
   { id: 1, value: 12000, suffix: "+", label: "Attendees" },
@@ -37,13 +30,6 @@ const whyJoinFeatures = [
   { id: 2, icon: "02", title: "Gain International Exposure", description: "Position yourself and your brand on an international stage, reaching audiences across 47+ countries." },
   { id: 3, icon: "03", title: "Speak on a Prestigious Stage", description: "Share your expertise and vision with thousands of high-impact attendees in an electrifying setting." },
   { id: 4, icon: "04", title: "Elevate Your Personal Brand", description: "Be featured in global media, executive publications, and across our network of 100K+ professionals." },
-];
-
-const speakers = [
-  { id: 1, src: speakerimg, name: "Yuko Kondo",  role: "Global Strategy Advisor" },
-  { id: 2, src: speakerimg1, name: "Gloria Sloan", role: "Author | Life Coach ...." },
-  { id: 3, src: speakerimg2, name: "Janice Lum",  role: "Artist as Facilitator" },
-  { id: 4, src: speakerimg3, name: "Dr. Stoyana Natseva",  role: "Keynote Speaker | Coach" },
 ];
 
 const highlights = [
@@ -434,7 +420,30 @@ function WhyJoin() {
 
 /* ─── SPEAKERS ──────────────────────────────── */
 function Speakers() {
+  const [speakers, setSpeakers] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    async function fetchSpeakers() {
+      const { data, error } = await supabase
+        .from("speakers")
+        .select("id, speaker_name, role, image_url, region, display_order")
+        .eq("is_published", true)
+        .order("display_order", { ascending: true });
+
+      if (error) {
+        console.error("Failed to fetch Asia speakers:", error.message);
+        return;
+      }
+      const filtered = (data || []).filter((row) => {
+        const r = (row.region || "").trim().toLowerCase();
+        return !r || r === "all" || r === "asia";
+      });
+      setSpeakers(filtered.slice(0, 4));
+    }
+    fetchSpeakers();
+  }, []);
+
   return (
     <section className="as-hp-speakers" id="speakers">
       <div className="as-hp-speakers__inner">
@@ -449,10 +458,9 @@ function Speakers() {
           {speakers.map((sp, i) => (
             <FadeUp key={sp.id} delay={i * 80}>
               <div className="as-hp-speaker-card">
-                <div className="as-hp-speaker-card__img-wrap"><img src={sp.src} alt={sp.name} /></div>
-                <h3 className="as-hp-speaker-card__name">{sp.name}</h3>
-                <p className="as-hp-speaker-card__country">{sp.country}</p>
-                <span className="as-hp-speaker-card__role">{sp.role}</span>
+                <div className="as-hp-speaker-card__img-wrap"><img src={sp.image_url} alt={sp.speaker_name} loading="lazy" /></div>
+                <h3 className="as-hp-speaker-card__name">{sp.speaker_name}</h3>
+                {sp.role && <span className="as-hp-speaker-card__role">{sp.role}</span>}
               </div>
             </FadeUp>
           ))}

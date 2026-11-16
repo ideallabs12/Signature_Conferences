@@ -107,11 +107,12 @@ const REGIONS = [
 ];
 
 const NAV_LINKS = [
-  { label: "Home",    path: "/" },
-  { label: "About",   path: "/about" },
-  { label: "Blog",    path: "/blog" },
-  { label: "FAQ",     path: "/faq" },
-  { label: "Contact", path: "/contact" },
+  { label: "Home",     path: "/" },
+  { label: "About",    path: "/about" },
+  { label: "Speakers", path: "/speakers" },
+  { label: "Blog",     path: "/blog" },
+  { label: "FAQ",      path: "/faq" },
+  { label: "Contact",  path: "/contact" },
 ];
 
 const ADDRESSES = [

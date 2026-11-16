@@ -10,6 +10,7 @@ import CustomCursor from "./Components/Cursor/cursor";
 
 // Global Pages
 const Home = lazy(() => import("./Pages/Home/homepage"));
+const GlobalSpeakers = lazy(() => import("./Pages/Speakers/speakers"));
 const ContactPage = lazy(() => import("./Pages/Contact/contact"));
 const Aboutpage = lazy(() => import("./Pages/About/about"));
 const Register = lazy(() => import("./Pages/Register/register"));
@@ -119,6 +120,7 @@ function App() {
         <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100vw', backgroundColor: '#0d1728', color: '#fff', fontSize: '1.2rem', fontFamily: 'sans-serif' }}>Loading...</div>}>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/speakers" element={<GlobalSpeakers />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/about" element={<Aboutpage />} />
             <Route path="/register" element={<Register />} />

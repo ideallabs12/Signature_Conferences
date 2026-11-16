@@ -132,22 +132,32 @@
   background: linear-gradient(160deg, var(--green-deep), var(--green-mid));
 }
 
-/* Scrim + label — hidden by default, fade in on hover only */
+/* Scrim + label — always visible */
+.na-speaker-card__scrim {
+  position: absolute;
+  inset: 10px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, transparent 48%, rgba(2, 30, 26, 0.86) 100%);
+  opacity: 1;
+  pointer-events: none;
+}
 
 .na-speaker-card__label {
   position: absolute;
   left: 24px;
-  bottom: 24px;
+  right: 24px;
+  bottom: 22px;
   font-family: var(--font-heading);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--white);
-  opacity: 0;
-  transform: translateY(8px);
+  opacity: 1;
+  transform: translateY(0);
   transition: opacity 0.3s ease, transform 0.3s ease;
   pointer-events: none;
+  z-index: 1;
 }
 
 .na-speaker-card__frame:hover .na-speaker-card__scrim,

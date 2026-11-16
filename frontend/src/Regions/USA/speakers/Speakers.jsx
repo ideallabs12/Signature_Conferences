@@ -1,30 +1,10 @@
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "../../../lib/supabase.jsx";
 import { Navbar } from "../Landingpage/homepage.jsx";
 import "./Speakers.css";
 import Footer from "../../../Components/Footer/footer";
 import "../Landingpage/homepage.css";
-// import USASpeakersSection from "./tempspeakers.jsx";
-
-import speaker1 from "../Landingpage/images/galleryimgus.jpeg";
-import speaker2 from "../Landingpage/images/galleryimgus1.jpeg";
-import speaker3 from "../Landingpage/images/galleryimgus2.jpeg";
-import speaker4 from "../Landingpage/images/galleryimgus3.jpeg";
-import speaker5 from "../Landingpage/images/galleryimgus4.jpeg";
-import speaker6 from "../Landingpage/images/galleryimgus5.jpeg";
-import speaker7 from "../Landingpage/images/usagallery5.jpeg";
-import speaker8 from "../Landingpage/images/usagallery7.jpeg";
-import speaker9 from "../Landingpage/images/usagallery9.jpeg";
-import speaker10 from "../Landingpage/images/usagallery13.jpeg";
-import speaker11 from "../Landingpage/images/Marcia Hamilton.jpeg";
-import speaker12 from "../Landingpage/images/Cara Tyrrell.jpeg";
-import speaker13 from "../Landingpage/images/JanetHamilton.jpeg";
-import speaker14 from "../Landingpage/images/NataliyaPetrushina.png";
-import speaker15 from "../Landingpage/images/OzanaGiusca.jpeg";
-import speaker16 from "../Landingpage/images/CathleenBeerkens.jpeg";
-import speaker17 from "../Landingpage/images/AminaHedayatKhalil.jpeg";
-import speaker18 from "../Landingpage/images/KarenTomlinson.jpeg";
-
-
 
 function unlockScroll() {
   const scrollY = Math.abs(parseInt(document.body.style.top || "0", 10));
@@ -43,27 +23,6 @@ function unlockScroll() {
   });
   if (scrollY > 0) window.scrollTo(0, scrollY);
 }
-
-const speakers = [
-  { id: 1, name: "Speaker ",  image: speaker1 },
-  { id: 2, name: "Keynote Speaker ",  image: speaker2 },
-  { id: 3, name: "Keynote Speaker ",  image: speaker3 },
-  { id: 4, name: "Speaker ",  image: speaker4 },
-  { id: 5, name: "Keynote Speaker ",  image: speaker5 },
-  { id: 6, name: "Keynote Speaker ", image: speaker6 },
-  { id: 7, name: "Keynote Speaker ",  image: speaker7 },
-  { id: 8, name: "Speaker ",  image: speaker8 },
-  { id: 9, name: "Keynote Speaker ", image: speaker9 },
-  { id: 10, name: "Speaker ", image: speaker10 },
-  { id: 11, name: "Keynote Speaker ", image: speaker11 },
-  { id: 12, name: "Keynote Speaker ", image: speaker12 },
-  { id: 13, name: "Keynote Speaker ", image: speaker13 },
-  { id: 14, name: "Keynote Speaker ", image: speaker14 }, 
-  { id: 15, name: "Keynote Speaker ", image: speaker15 }, 
-  { id: 16, name: "Keynote Speaker ", image: speaker16 },
-  { id: 17, name: "Keynote Speaker ", image: speaker17 },
-  { id: 18, name: "Keynote Speaker ", image: speaker18 }, 
-];
 
 /* ─── HERO ──────────────────────────────────── */
 function SpeakersHero() {
@@ -88,14 +47,14 @@ function SpeakerCard({ speaker }) {
     <div className="usa-sp-card">
       <div className="usa-sp-card__image-wrap">
         <img
-          src={speaker.image}
-          alt={speaker.name}
+          src={speaker.image_url}
+          alt={speaker.speaker_name || "Speaker"}
           className="usa-sp-card__img"
           loading="lazy"
         />
         <div className="usa-sp-card__overlay">
-          <p className="usa-sp-card__overlay-role">{speaker.role}</p>
-          <h3 className="usa-sp-card__overlay-name">{speaker.name}</h3>
+          {speaker.role && <p className="usa-sp-card__overlay-role">{speaker.role}</p>}
+          <h3 className="usa-sp-card__overlay-name">{speaker.speaker_name}</h3>
         </div>
       </div>
     </div>
@@ -104,14 +63,33 @@ function SpeakerCard({ speaker }) {
 
 /* ─── GRID ───────────────────────────────────── */
 function SpeakersGrid() {
+  const { data: speakers = [], isLoading } = useQuery({
+    queryKey: ["speakers", "usa"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("speakers")
+        .select("id, speaker_name, role, image_url, region, display_order")
+        .eq("is_published", true)
+        .order("display_order", { ascending: true });
+
+      if (error) throw error;
+      return (data || []).filter((row) => {
+        const r = (row.region || "").trim().toLowerCase();
+        return !r || r === "all" || r === "usa";
+      });
+    },
+  });
+
   return (
     <section className="usa-sp-grid-section">
       <div className="usa-sp-grid-section__inner">
-        <div className="usa-sp-grid">
-          {speakers.map((speaker) => (
-            <SpeakerCard key={speaker.id} speaker={speaker} />
-          ))}
-        </div>
+        {isLoading ? null : (
+          <div className="usa-sp-grid">
+            {speakers.map((speaker) => (
+              <SpeakerCard key={speaker.id} speaker={speaker} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -130,7 +108,6 @@ export default function Speakers() {
       <Navbar />
       <SpeakersHero />
       <SpeakersGrid />
-      {/* <USASpeakersSection/> */}
       <Footer theme="usa" />
     </div>
   );

@@ -1,54 +1,9 @@
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "../../../lib/supabase.jsx";
 import { Navbar } from "../Landingpage/eurohome.jsx";
 import "./Speakers.css";
 import "../Landingpage/eurohome.css";
 import Footer from "../../../Components/Footer/footer";
-
-
-import spimg from "../../USA/Landingpage/images/galleryimgus.jpeg";
-import spimg1 from "../../USA/Landingpage/images/galleryimgus1.jpeg";
-import spimg2 from "../../USA/Landingpage/images/galleryimgus2.jpeg";
-import spimg3 from "../../USA/Landingpage/images/galleryimgus3.jpeg";
-import spimg4 from "../../USA/Landingpage/images/galleryimgus4.jpeg";
-import spimg5 from "../../USA/Landingpage/images/galleryimgus5.jpeg";
-import spimg6 from "../../USA/Landingpage/images/usagallery5.jpeg";
-import spimg7 from "../../USA/Landingpage/images/usagallery7.jpeg";
-import spimg8 from "../../USA/Landingpage/images/usagallery9.jpeg";
-import spimg9 from "../../USA/Landingpage/images/usagallery13.jpeg";
-import spimg10 from "../../USA/Landingpage/images/Marcia Hamilton.jpeg";
-import spimg11 from "../../USA/Landingpage/images/Cara Tyrrell.jpeg";
-import spimg12 from "../../USA/Landingpage/images/JanetHamilton.jpeg";
-import spimg13 from "../../USA/Landingpage/images/OzanaGiusca.jpeg";
-import spimg14 from "../../USA/Landingpage/images/CathleenBeerkens.jpeg";
-import spimg15 from "../../USA/Landingpage/images/AminaHedayatKhalil.jpeg";
-import spimg16 from "../../USA/Landingpage/images/KarenTomlinson.jpeg";
-
-
-
-
-
-/* ─── HARDCODED SPEAKER IMAGES ───────────────── */
-const speakers = [
-  { id: 1,  image: spimg,  alt: "Speaker 1" },
-  { id: 2,  image: spimg1,  alt: "Speaker 2" },
-  { id: 3,  image: spimg2,  alt: "Speaker 3" },
-  { id: 4,  image: spimg3,  alt: "Speaker 4" },
-  { id: 5,  image: spimg4,  alt: "Speaker 5" },
-  { id: 6,  image: spimg5,  alt: "Speaker 6" },
-  { id: 7,  image: spimg6,  alt: "Speaker 7" },
-  { id: 8,  image: spimg7,  alt: "Speaker 8" },
-  { id: 9,  image: spimg8,  alt: "Speaker 9" },
-  { id: 10, image:spimg9, alt: "Speaker 10" },
-  { id: 11, image:spimg10, alt: "Speaker 11" },
-  { id: 12, image:spimg11, alt: "Speaker 12" },
-  { id: 13, image:spimg12, alt: "Speaker 13" },
-  { id: 14, image:spimg13, alt: "Speaker 14" },
-  { id: 15, image:spimg14, alt: "Speaker 15" },
-  { id: 16, image:spimg15, alt: "Speaker 16" },
-  { id: 17, image:spimg16, alt: "Speaker 17" },
-
-
-];
 
 /* ─── HERO ───────────────────────────────────── */
 function SpeakersHero() {
@@ -71,36 +26,59 @@ function SpeakerCard({ speaker }) {
   return (
     <div className="europe-speakers-card">
       <img
-        src={speaker.image}
-        alt={speaker.alt}
+        src={speaker.image_url}
+        alt={speaker.speaker_name || "Speaker"}
         className="europe-speakers-card__img"
+        loading="lazy"
       />
+      {speaker.speaker_name && (
+        <div className="europe-speakers-card__overlay">
+          <span className="europe-speakers-card__name">{speaker.speaker_name}</span>
+        </div>
+      )}
     </div>
   );
 }
 
 /* ─── GRID ───────────────────────────────────── */
 function SpeakersGrid() {
+  const { data: speakers = [], isLoading } = useQuery({
+    queryKey: ["speakers", "europe"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("speakers")
+        .select("id, speaker_name, role, image_url, region, display_order")
+        .eq("is_published", true)
+        .order("display_order", { ascending: true });
+
+      if (error) throw error;
+      return (data || []).filter((row) => {
+        const r = (row.region || "").trim().toLowerCase();
+        return !r || r === "all" || r === "europe";
+      });
+    },
+  });
+
   return (
     <section className="europe-speakers-grid-section">
-      <div className="europe-speakers-grid">
-        {speakers.map((speaker) => (
-          <SpeakerCard key={speaker.id} speaker={speaker} />
-        ))}
-      </div>
+      {isLoading ? null : (
+        <div className="europe-speakers-grid">
+          {speakers.map((speaker) => (
+            <SpeakerCard key={speaker.id} speaker={speaker} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
 
 /* ─── ROOT ───────────────────────────────────── */
 export default function Speakers() {
-    const [activeFilter, setActiveFilter] = useState("all");
-
   return (
     <div className="europe-page">
       <Navbar />
-      <SpeakersHero /> 
-       <SpeakersGrid />
+      <SpeakersHero />
+      <SpeakersGrid />
       <Footer theme="europe" />
     </div>
   );

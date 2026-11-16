@@ -220,7 +220,7 @@
   transform: scale(1.05);
 }
 
-/* ─── HOVER OVERLAY ───────────────────────────────────────────── */
+/* ─── OVERLAY (always visible) ────────────────────────────────── */
 .usa-page .usa-sp-card__overlay {
   position: absolute;
   inset: 0;
@@ -230,7 +230,7 @@
   flex-direction: column;
   justify-content: flex-end;
   padding: 20px 16px;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.35s ease;
   pointer-events: none;
 }

@@ -17,17 +17,6 @@ import usahomegallery3 from "../../USA/Images/usagallery.jpeg";
 import usahomegallery4 from "../../USA/Images/galleryusa3.jpeg";
 import usahomegallery5 from "../../USA/Images/usagallery1.jpeg";
 
-
-import Speakerimg from "./images/galleryimgus.jpeg";
-import Speakerimg1 from "./images/galleryimgus1.jpeg";
-import Speakerimg2 from "./images/galleryimgus2.jpeg";
-import Speakerimg3 from "./images/galleryimgus3.jpeg";
-import Speakerimg4 from "./images/galleryimgus4.jpeg";
-import Speakerimg5 from "./images/galleryimgus5.jpeg";
-import Speakerimg6 from "./images/Marcia Hamilton.jpeg";
-import Speakerimg7 from "./images/Cara Tyrrell.jpeg";
-
-
 const NAV_LINKS = [
   { label: "Home", to: "/usa" },
   { label: "About", to: "/usa-about" },
@@ -681,19 +670,25 @@ function FeatureCard({ card, index }) {
   );
 }
 
-const SPEAKERS = [
-  { id: 1, image: Speakerimg },
-  { id: 2, image: Speakerimg1 },
-  { id: 3, image: Speakerimg2 },
-  { id: 4, image: Speakerimg3 },
-  { id: 5, image: Speakerimg4 },
-  { id: 6, image: Speakerimg5 },
-  { id: 7, image: Speakerimg6 },
-  { id: 8, image: Speakerimg7 },
-];
-
 const EsteeemedSpeakers = () => {
   const navigate = useNavigate();
+  const { data: speakers = [] } = useQuery({
+    queryKey: ["usaHomeSpeakers"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("speakers")
+        .select("id, speaker_name, role, image_url, region, display_order")
+        .eq("is_published", true)
+        .order("display_order", { ascending: true });
+      if (error) throw error;
+      const filtered = (data || []).filter((row) => {
+        const r = (row.region || "").trim().toLowerCase();
+        return !r || r === "all" || r === "usa";
+      });
+      return filtered.slice(0, 8);
+    },
+  });
+
   return (
     <section className="usa-speakers-section">
       <div className="usa-speakers-track-wrap">
@@ -703,10 +698,10 @@ const EsteeemedSpeakers = () => {
         </div>
         <div className="usa-speakers-marquee">
           <div className="usa-speakers-marquee__inner">
-            {[...SPEAKERS, ...SPEAKERS].map((speaker, i) => (
-              <div className="usa-speaker-card" key={i}>
+            {[...speakers, ...speakers].map((speaker, i) => (
+              <div className="usa-speaker-card" key={`${speaker.id}-${i}`}>
                 <div className="usa-speaker-card__image-wrap">
-                  <img src={speaker.image} alt={speaker.name} loading="lazy" />
+                  <img src={speaker.image_url} alt={speaker.speaker_name || "Speaker"} loading="lazy" />
                 </div>
               </div>
             ))}

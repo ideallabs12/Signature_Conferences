@@ -6,6 +6,7 @@ import logo from "./SGCLogo.png";
 const LINKS = [
   { label: "HOME", path: "#home", type: "scroll" },
   { label: "ABOUT", path: "/about", type: "route" },
+  { label: "SPEAKERS", path: "/speakers", type: "route" },
   { label: "GLOBAL HUBS", path: "#regions", type: "scroll", hasDropdown: true },
   { label: "CONTACT", path: "/contact", type: "route" },
 ];

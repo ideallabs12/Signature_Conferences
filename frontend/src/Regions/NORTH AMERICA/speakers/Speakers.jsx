@@ -1,29 +1,9 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "../../../lib/supabase.jsx";
 import { NaNavbar } from "../NAHome/Nahome";
 import "./Speakers.css";
 import Footer from "../../../Components/Footer/footer";
-
-
-import speaker1 from "../../USA/Landingpage/images/galleryimgus.jpeg";
-import speaker2 from "../../USA/Landingpage/images/galleryimgus1.jpeg";
-import speaker3 from "../../USA/Landingpage/images/galleryimgus2.jpeg";
-import speaker4 from "../../USA/Landingpage/images/galleryimgus3.jpeg";
-import speaker5 from "../../USA/Landingpage/images/galleryimgus4.jpeg";
-import speaker6 from "../../USA/Landingpage/images/galleryimgus5.jpeg";
-import speaker7 from "../../USA/Landingpage/images/usagallery7.jpeg";
-import speaker8 from "../../USA/Landingpage/images/usagallery13.jpeg";
-import speaker9 from "../../USA/Landingpage/images/usagallery5.jpeg";
-import speaker10 from "../../USA/Landingpage/images/usagallery9.jpeg";
-import speaker11 from "../../USA/Landingpage/images/Marcia Hamilton.jpeg";
-import speaker12 from "../../USA/Landingpage/images/Cara Tyrrell.jpeg";
-import speaker13 from "../../USA/Landingpage/images/JanetHamilton.jpeg";
-import speaker14 from "../../USA/Landingpage/images/OzanaGiusca.jpeg";
-import speaker15 from "../../USA/Landingpage/images/CathleenBeerkens.jpeg";
-import speaker16 from "../../USA/Landingpage/images/AminaHedayatKhalil.jpeg";
-import speaker17 from "../../USA/Landingpage/images/KarenTomlinson.jpeg";
-
-
-
 
 export const speakerCategories = [
   { id: "all", label: "All Speakers" },
@@ -31,30 +11,6 @@ export const speakerCategories = [
   { id: "ai-stem", label: "AI & STEM" },
   { id: "business", label: "Business" },
   { id: "wellness", label: "Wellness" },
-];
-
-// Edit this array to add or update speakers.
-// "label" shows only on hover — set it to "" to skip a label for that speaker.
-// IMPORTANT: give each speaker their own unique image import above —
-// right now they all point at the same placeholder file.
-const speakers = [
-  { id: 1, img: speaker1, label: "Speaker" },
-  { id: 2, img: speaker2, label: "Speaker" },
-  { id: 3, img: speaker3, label: "Keynote Speaker" },
-  { id: 4, img: speaker4, label: "Speaker" },
-  { id: 5, img: speaker5, label: "Keynote Speaker" },
-  { id: 6, img: speaker6, label: "Speaker" },
-  { id: 7, img: speaker7, label: "Speaker" },
-  { id: 8, img: speaker8, label: "Keynote Speaker" },
-  { id: 9, img: speaker9, label: "Speaker" },
-  { id: 10, img: speaker10, label: "Speaker" },
-  { id: 11, img: speaker11, label: "Keynote Speaker" },
-  { id: 12, img: speaker12, label: "Speaker" }, 
-  { id: 13, img: speaker13, label: "Keynote Speaker" },
-  { id: 14, img: speaker14, label: "Speaker" },
-  { id: 15, img: speaker15, label: "Keynote Speaker" },
-  { id: 16, img: speaker16, label: "Speaker" },
-  { id: 17, img: speaker17, label: "Keynote Speaker" },
 ];
 
 function SpeakersHero() {
@@ -76,25 +32,27 @@ function SpeakersHero() {
 
 function SpeakerCard({ speaker }) {
   const [imgError, setImgError] = useState(false);
+  const label = speaker.speaker_name || speaker.role;
 
   return (
     <article className="na-speaker-card">
       <div className="na-speaker-card__frame">
         {!imgError ? (
           <img
-            src={speaker.img}
-            alt="Speaker"
+            src={speaker.image_url}
+            alt={speaker.speaker_name || "Speaker"}
             className="na-speaker-card__img"
+            loading="lazy"
             onError={() => setImgError(true)}
           />
         ) : (
           <div className="na-speaker-card__img-fallback" />
         )}
 
-        {speaker.label && (
+        {label && (
           <>
             <div className="na-speaker-card__scrim" />
-            <span className="na-speaker-card__label">{speaker.label}</span>
+            <span className="na-speaker-card__label">{label}</span>
           </>
         )}
       </div>
@@ -103,14 +61,33 @@ function SpeakerCard({ speaker }) {
 }
 
 function SpeakersGrid() {
+  const { data: speakers = [], isLoading } = useQuery({
+    queryKey: ["speakers", "north-america"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("speakers")
+        .select("id, speaker_name, role, image_url, region, display_order")
+        .eq("is_published", true)
+        .order("display_order", { ascending: true });
+
+      if (error) throw error;
+      return (data || []).filter((row) => {
+        const r = (row.region || "").trim().toLowerCase();
+        return !r || r === "all" || r === "north-america" || r === "north america";
+      });
+    },
+  });
+
   return (
     <section className="na-speakers-grid-section">
       <div className="na-speakers-grid-section__inner">
-        <div className="na-speakers-grid">
-          {speakers.map((speaker) => (
-            <SpeakerCard key={speaker.id} speaker={speaker} />
-          ))}
-        </div>
+        {isLoading ? null : (
+          <div className="na-speakers-grid">
+            {speakers.map((speaker) => (
+              <SpeakerCard key={speaker.id} speaker={speaker} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

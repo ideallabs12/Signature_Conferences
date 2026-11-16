@@ -145,7 +145,7 @@
   transform: scale(1.05);
 }
 
-/* ─── NAME OVERLAY (on hover) ─────────────────── */
+/* ─── NAME OVERLAY (always visible) ─────────── */
 .as-sp-card__overlay {
   position: absolute;
   inset: 0;
@@ -153,8 +153,8 @@
   display: flex;
   align-items: flex-end;
   padding: 18px;
-  background: linear-gradient(180deg, transparent 40%, rgba(14, 0, 1, 0.88) 100%);
-  opacity: 0;
+  background: linear-gradient(180deg, transparent 45%, rgba(14, 0, 1, 0.88) 100%);
+  opacity: 1;
   transition: opacity 0.35s ease;
   pointer-events: none;
 }
