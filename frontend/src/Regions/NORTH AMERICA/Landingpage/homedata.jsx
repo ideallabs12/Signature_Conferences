@@ -110,41 +110,6 @@ export const earlyBirdOffer = {
   reminder: "Limited spots remaining - secure your place now.",
 };
 
-export const speakers = [
-  {
-    id: 1,
-    image:
-      "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&q=80",
-    name: "Dr. Arjun Mehta",
-    country: "India",
-    role: "Global Strategy Advisor",
-  },
-  {
-    id: 2,
-    image:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&q=80",
-    name: "Sarah Al-Rashidi",
-    country: "UAE",
-    role: "CEO, FuturePath Inc.",
-  },
-  {
-    id: 3,
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&q=80",
-    name: "James O'Brien",
-    country: "United Kingdom",
-    role: "Keynote Speaker & Author",
-  },
-  {
-    id: 4,
-    image:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&q=80",
-    name: "Amara Nwosu",
-    country: "Nigeria",
-    role: "Policy & Innovation Leader",
-  },
-];
-
 export const highlights = [
   {
     id: 1,
