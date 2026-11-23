@@ -192,6 +192,18 @@ export default function EventDetail() {
               </div>
             </section>
           )}
+
+          <section className="usa-eid-section">
+            <h2 className="usa-eid-section__heading">Conference Agenda</h2>
+            <div className="usa-eid-agenda-wrap">
+              <img
+                src="/signature_agenda_march.jpg"
+                alt="Conference Agenda"
+                className="usa-eid-agenda-img"
+                loading="lazy"
+              />
+            </div>
+          </section>
         </div>
       </div>
 

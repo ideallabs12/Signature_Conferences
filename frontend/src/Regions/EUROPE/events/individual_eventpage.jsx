@@ -182,6 +182,18 @@ export default function EventDetail() {
               </div>
             </section>
           )}
+
+          <section className="europe-event-section">
+            <h2 className="europe-event-section__heading">Conference Agenda</h2>
+            <div className="europe-event-agenda-wrap">
+              <img
+                src="/signature_agenda_march.jpg"
+                alt="Conference Agenda"
+                className="europe-event-agenda-img"
+                loading="lazy"
+              />
+            </div>
+          </section>
         </div>
       </div>
 

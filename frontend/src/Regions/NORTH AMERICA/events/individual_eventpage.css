@@ -94,6 +94,10 @@
 .na-ed-theme-chip__num { font-family: var(--font-heading); font-size: 0.65rem; font-weight: 900; color: var(--na-gold); opacity: 0.7; flex-shrink: 0; margin-top: 2px; }
 .na-ed-theme-chip__text { font-family: var(--font-body); font-size: 0.78rem; font-weight: 500; color: rgba(255,255,255,0.75); line-height: 1.5; }
 
+/* ─── AGENDA IMAGE ──────────────────────────── */
+.na-ed-agenda-wrap { border-radius: 16px; overflow: hidden; border: 1px solid rgba(184,149,42,0.2); box-shadow: 0 10px 30px rgba(13,43,34,0.12); background: #fff; }
+.na-ed-agenda-img { width: 100%; height: auto; display: block; }
+
 /* ─── RESPONSIVE ────────────────────────────── */
 @media (max-width: 1024px) {
   .na-ed-hero__top-row { flex-direction: column; align-items: flex-start; gap: 30px; }

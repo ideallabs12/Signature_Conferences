@@ -400,6 +400,20 @@ html { scroll-behavior: smooth; }
   line-height: 1.5;
 }
 
+.europe-event-agenda-wrap {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(59, 33, 18, 0.12);
+  box-shadow: 0 10px 30px rgba(59, 33, 18, 0.1);
+  background: #fff;
+}
+
+.europe-event-agenda-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* ─── RESPONSIVE ────────────────────────────── */
 @media (max-width: 1024px) {
   .europe-event-hero__top-row { flex-direction: column; align-items: flex-start; gap: 30px; }

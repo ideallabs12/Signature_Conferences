@@ -412,6 +412,20 @@
   color: rgba(249, 240, 224, 0.82);
 }
 
+.as-ed-agenda-wrap {
+  border-radius: var(--as-ed-radius-card, 16px);
+  overflow: hidden;
+  border: 1px solid var(--as-ed-border);
+  box-shadow: var(--as-ed-shadow);
+  background: #fff;
+}
+
+.as-ed-agenda-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 @media (max-width: 1024px) {
   .as-ed-hero__top-row {
     flex-direction: column;

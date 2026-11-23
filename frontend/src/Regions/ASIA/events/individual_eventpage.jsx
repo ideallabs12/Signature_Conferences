@@ -168,6 +168,18 @@ export default function AsiaEventDetail() {
               </div>
             </section>
           )}
+
+          <section className="as-ed-section">
+            <h2 className="as-ed-section__heading">Conference Agenda</h2>
+            <div className="as-ed-agenda-wrap">
+              <img
+                src="/signature_agenda_march.jpg"
+                alt="Conference Agenda"
+                className="as-ed-agenda-img"
+                loading="lazy"
+              />
+            </div>
+          </section>
         </div>
       </div>
       <Footer theme="asia"/>

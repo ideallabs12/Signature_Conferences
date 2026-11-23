@@ -165,6 +165,18 @@ export default function EventDetail() {
               </div>
             </section>
           )}
+
+          <section className="na-ed-section">
+            <h2 className="na-ed-section__heading">Conference Agenda</h2>
+            <div className="na-ed-agenda-wrap">
+              <img
+                src="/signature_agenda_march.jpg"
+                alt="Conference Agenda"
+                className="na-ed-agenda-img"
+                loading="lazy"
+              />
+            </div>
+          </section>
         </div>
       </div>
 

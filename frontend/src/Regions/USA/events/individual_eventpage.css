@@ -418,6 +418,20 @@
   line-height: 1.5;
 }
 
+.usa-page .usa-eid-agenda-wrap {
+  border-radius: var(--usa-eid-radius-card, 16px);
+  overflow: hidden;
+  border: 1px solid var(--usa-eid-border-light);
+  box-shadow: var(--usa-eid-shadow-sm);
+  background: #fff;
+}
+
+.usa-page .usa-eid-agenda-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* ─── RESPONSIVE ────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .usa-page .usa-eid-hero__top-row { flex-direction: column; align-items: flex-start; gap: 30px; }
